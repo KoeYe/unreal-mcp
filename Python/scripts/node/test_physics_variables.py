@@ -225,7 +225,7 @@ def main():
         sock.close()
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect(("127.0.0.1", 55557))
-        
+
         # Step 7: Add function node to set mesh physics settings from variables
         function_params = {
             "blueprint_name": "PhysicsObstacleBP",
@@ -237,18 +237,18 @@ def main():
             },
             "node_position": [300, 0]
         }
-        
+
         response = send_command(sock, "add_blueprint_function_node", function_params)
-        
+
         if not response or response.get("status") != "success" or not response.get("result", {}).get("success"):
             logger.error(f"Failed to add function node: {response}")
             return
-            
+
         logger.info("SetMassScale function node added successfully!")
-        
+
         # Save the node ID for later connections
         set_mass_node_id = response.get("result", {}).get("node_id")
-        
+
         # Close and reopen connection
         sock.close()
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
