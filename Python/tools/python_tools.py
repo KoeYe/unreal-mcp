@@ -52,7 +52,7 @@ def register_python_tools(mcp: FastMCP):
                 path = os.path.abspath(path)
 
             params = {"script": script, "path": path}
-            response = unreal.send_command("execute_python_script", params) # TODO: add this command to UnrealMCP
+            response = unreal.send_command("execute_python_script", params)
 
             if not response:
                 logger.error("No response from Unreal Engine")

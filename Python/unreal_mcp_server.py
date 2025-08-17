@@ -229,9 +229,8 @@ async def server_lifespan(server: FastMCP) -> AsyncIterator[Dict[str, Any]]:
 # Initialize server
 mcp = FastMCP(
     "UnrealMCP",
-    description="Unreal Engine integration via Model Context Protocol",
     lifespan=server_lifespan,
-    host="0.0.0.0", port=8000
+    host="0.0.0.0", port=9000
 )
 
 # Import and register tools
@@ -241,34 +240,22 @@ from tools.node_tools import register_blueprint_node_tools
 from tools.project_tools import register_project_tools
 from tools.umg_tools import register_umg_tools
 from tools.python_tools import register_python_tools
+from tools.api_doc_tools import register_api_doc_tools
 
 # Register tools
 register_editor_tools(mcp)
 register_blueprint_tools(mcp)
-register_blueprint_node_tools(mcp)
+# register_blueprint_node_tools(mcp)
 register_project_tools(mcp)
-register_umg_tools(mcp)
+# register_umg_tools(mcp)
 register_python_tools(mcp)
+register_api_doc_tools(mcp)
 
 @mcp.prompt()
 def info():
     """Information about available Unreal MCP tools and best practices."""
     return """
     # Unreal MCP Server Tools and Best Practices
-    
-    ## UMG (Widget Blueprint) Tools
-    - `create_umg_widget_blueprint(widget_name, parent_class="UserWidget", path="/Game/UI")` 
-      Create a new UMG Widget Blueprint
-    - `add_text_block_to_widget(widget_name, text_block_name, text="", position=[0,0], size=[200,50], font_size=12, color=[1,1,1,1])`
-      Add a Text Block widget with customizable properties
-    - `add_button_to_widget(widget_name, button_name, text="", position=[0,0], size=[200,50], font_size=12, color=[1,1,1,1], background_color=[0.1,0.1,0.1,1])`
-      Add a Button widget with text and styling
-    - `bind_widget_event(widget_name, widget_component_name, event_name, function_name="")`
-      Bind events like OnClicked to functions
-    - `add_widget_to_viewport(widget_name, z_order=0)`
-      Add widget instance to game viewport
-    - `set_text_block_binding(widget_name, text_block_name, binding_property, binding_type="Text")`
-      Set up dynamic property binding for text blocks
 
     ## Editor Tools
     ### Viewport and Screenshots
@@ -282,7 +269,7 @@ def info():
     - `delete_actor(name)` - Remove actors
     - `set_actor_transform(name, location, rotation, scale)` - Modify actor transform
     - `get_actor_properties(name)` - Get actor properties
-    
+
     ## Blueprint Management
     - `create_blueprint(name, parent_class)` - Create new Blueprint classes
     - `add_component_to_blueprint(blueprint_name, component_type, component_name)` - Add components
@@ -292,32 +279,21 @@ def info():
     - `set_blueprint_property(blueprint_name, property_name, property_value)` - Set properties
     - `set_pawn_properties(blueprint_name)` - Configure Pawn settings
     - `spawn_blueprint_actor(blueprint_name, actor_name)` - Spawn Blueprint actors
-    
-    ## Blueprint Node Management
-    - `add_blueprint_event_node(blueprint_name, event_type)` - Add event nodes
-    - `add_blueprint_input_action_node(blueprint_name, action_name)` - Add input nodes
-    - `add_blueprint_function_node(blueprint_name, target, function_name)` - Add function nodes
-    - `connect_blueprint_nodes(blueprint_name, source_node_id, source_pin, target_node_id, target_pin)` - Connect nodes
-    - `add_blueprint_variable(blueprint_name, variable_name, variable_type)` - Add variables
-    - `add_blueprint_get_self_component_reference(blueprint_name, component_name)` - Add component refs
-    - `add_blueprint_self_reference(blueprint_name)` - Add self references
-    - `find_blueprint_nodes(blueprint_name, node_type, event_type)` - Find nodes
-    
+
+    ## Python Script Tools
+    - `execute_python_script(script, path)` - Execute a Python script from arg `script` or read from `path` in the Unreal environment
+    - `save_python_script(script, path)` - Save the Python script to a path
+    - `list_python_scripts(path)` - List all Python scripts in a directory
+
     ## Project Tools
     - `create_input_mapping(action_name, key, input_type)` - Create input mappings
     
     ## Best Practices
-    
-    ### UMG Widget Development
-    - Create widgets with descriptive names that reflect their purpose
-    - Use consistent naming conventions for widget components
-    - Organize widget hierarchy logically
-    - Set appropriate anchors and alignment for responsive layouts
-    - Use property bindings for dynamic updates instead of direct setting
-    - Handle widget events appropriately with meaningful function names
-    - Clean up widgets when no longer needed
-    - Test widget layouts at different resolutions
-    
+    ### Python Scripting
+    - Always check the Unreal Python APIs before coding the python script
+    - Always check if there is a python script you can reuse by using `list_python_scripts(path)`
+    - Always save the python script first by using `save_python_script(script, path)` and then execute it by using `execute_python_script(script, path)`, so that you can reuse it afterwards
+
     ### Editor and Actor Management
     - Use unique names for actors to avoid conflicts
     - Clean up temporary actors
