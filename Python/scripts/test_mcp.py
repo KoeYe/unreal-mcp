@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import asyncio
 import json
 from fastmcp import Client
@@ -38,7 +37,7 @@ async def main():
     params = {"prompt": "convert .obj file into .uassets"}
     
     print(f"Calling {tool_name} with {params}")
-    
+
     result = await call_tool(SERVER_URL, tool_name, params)
     
     print("\nResult:")

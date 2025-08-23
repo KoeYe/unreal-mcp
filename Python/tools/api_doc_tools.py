@@ -51,6 +51,7 @@ def _recall(query: str, db, json_file, top_k: int = 10):
 
     return prompt_results, distance_results[0]
 
+# TODO: try Qwen3-reranker-8B here
 def _rerank(class_results, method_results):
     """Rerank results based on embedding similarity"""
     logger.info("Reranking results...")

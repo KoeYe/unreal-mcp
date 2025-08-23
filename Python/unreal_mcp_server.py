@@ -3,7 +3,7 @@ Unreal Engine MCP Server
 
 A simple MCP server for interacting with Unreal Engine.
 """
-
+import os
 import logging
 import socket
 import sys
@@ -258,6 +258,9 @@ def info():
     # Unreal MCP Server Tools and Best Practices
 
     ## Editor Tools
+    ### API Document Query
+    - `api_doc_query(query_prompt)` - retrieve the related APIs given prompt
+
     ### Viewport and Screenshots
     - `focus_viewport(target, location, distance, orientation)` - Focus viewport
     - `take_screenshot(filename, show_ui, resolution)` - Capture screenshots
@@ -283,7 +286,6 @@ def info():
     ## Python Script Tools
     - `execute_python_script(script, path)` - Execute a Python script from arg `script` or read from `path` in the Unreal environment
     - `save_python_script(script, path)` - Save the Python script to a path
-    - `list_python_scripts(path)` - List all Python scripts in a directory
 
     ## Project Tools
     - `create_input_mapping(action_name, key, input_type)` - Create input mappings

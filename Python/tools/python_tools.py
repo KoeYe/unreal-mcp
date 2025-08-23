@@ -85,7 +85,7 @@ def register_python_tools(mcp: FastMCP):
 
     logger.info("Python tools registered successfully")
 
-    @mcp.tool()
+    # @mcp.tool()
     def list_python_scripts(ctx: Context, directory: str) -> Dict[str, Any]:
         """
         List all Python scripts in a specified directory.
