@@ -33,9 +33,13 @@ async def call_tool(server_url, tool_name, params):
 
 async def main():
     # Hardcode your tool call here
-    tool_name = "api_doc_query"
-    params = {"prompt": "convert .obj file into .uassets"}
-    
+    # tool_name = "api_doc_query"
+    # params = {"prompt": "convert .obj file into .uassets"}
+    tool_name = "execute_python_script"
+    with open("init_editor.py") as f:
+        python_script = f.read()
+
+    params = {"script": python_script, "path": ""}
     print(f"Calling {tool_name} with {params}")
 
     result = await call_tool(SERVER_URL, tool_name, params)
