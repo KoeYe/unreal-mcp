@@ -1,6 +1,7 @@
 import asyncio
 import json
 from fastmcp import Client
+from fastmcp.exceptions import ToolError
 
 SERVER_URL = "http://127.0.0.1:9000/sse"
 
