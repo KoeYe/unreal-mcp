@@ -14,8 +14,8 @@ from typing import Dict, List, Any, Optional
 openai = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY")
 )
-class_db = faiss.read_index("/opt/unreal-mcp/Database/kb_Classes.faiss")
-method_db = faiss.read_index("/opt/unreal-mcp/Database/kb_Methods.faiss")
+class_db = faiss.read_index("/home/rwang/coding-agent/UnrealEngine/unreal_mcp/Database/kb_Classes.faiss")
+method_db = faiss.read_index("/home/rwang/coding-agent/UnrealEngine/unreal_mcp/Database/kb_Methods.faiss")
 
 # Get logger
 logger = logging.getLogger("UnrealMCP")
