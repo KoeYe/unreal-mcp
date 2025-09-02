@@ -37,6 +37,9 @@ def register_python_tools(mcp: FastMCP):
 
             params = {"script": script, "path": path}
 
+            if path is not None and path.lower() == "none":
+                path = None
+
             # Check valid parameters
             if not script and not path:
                 error_msg = "Either script or path must be provided"

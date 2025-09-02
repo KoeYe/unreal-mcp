@@ -259,7 +259,7 @@ def info():
 
     ## Editor Tools
     ### API Document Query
-    - `api_doc_query(query_prompt)` - retrieve the related APIs given prompt
+    - `api_doc_query(query)` - retrieve the related APIs given query
 
     ### Viewport and Screenshots
     - `focus_viewport(target, location, distance, orientation)` - Focus viewport
