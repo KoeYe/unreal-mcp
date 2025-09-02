@@ -4,7 +4,7 @@ This module provides tools for managing Unreal Python API interactions.
 """
 
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import os
 
 from mcp.server.fastmcp import FastMCP, Context
@@ -16,7 +16,7 @@ def register_python_tools(mcp: FastMCP):
     """Register Python tools with the MCP server."""
 
     @mcp.tool()
-    def execute_python_script(ctx: Context, script: str | None, path: str | None) -> Dict[str, Any]:
+    def execute_python_script(ctx: Context, script: Optional[str] = None, path: Optional[str] = None) -> Dict[str, Any]:
         """
         Execute a Python script in the Unreal Engine context.
 
@@ -35,17 +35,14 @@ def register_python_tools(mcp: FastMCP):
                 logger.error("Failed to connect to Unreal Engine")
                 return {"success": False, "message": "Failed to connect to Unreal Engine"}
 
-            params = {"script": script, "path": path}
-
-            if path is not None and path.lower() == "none":
-                path = None
-
-            # Check valid parameters
+            # Ensure at least one parameter is provided
             if not script and not path:
                 error_msg = "Either script or path must be provided"
                 logger.error(error_msg)
                 return {"success": False, "message": error_msg}
-            if os.path.isfile(path) is False and path is not None:
+
+            # If path is provided, validate it
+            if path and not os.path.isfile(path):
                 error_msg = f"Script file does not exist: {path}"
                 logger.error(error_msg)
                 return {"success": False, "message": error_msg}
@@ -54,8 +51,13 @@ def register_python_tools(mcp: FastMCP):
             if path and not os.path.isabs(path):
                 path = os.path.abspath(path)
 
-            params = {"script": script, "path": path}
-            response = unreal.send_command("execute_python_script", params)
+            # if only path is offered, read and convert to script
+            if script is None and path:
+                with open(path, 'r') as file:
+                    script = file.read()
+
+            # Only send script content to Unreal
+            response = unreal.send_command("execute_python_script", {"script": script})
 
             if not response:
                 logger.error("No response from Unreal Engine")
@@ -88,13 +90,13 @@ def register_python_tools(mcp: FastMCP):
 
     logger.info("Python tools registered successfully")
 
-    # @mcp.tool()
-    def list_python_scripts(ctx: Context, directory: str) -> Dict[str, Any]:
+    @mcp.tool()
+    def list_python_scripts(ctx: Context, path: str) -> Dict[str, Any]:
         """
-        List all Python scripts in a specified directory.
+        List all Python scripts in a specified path.
 
         Args:
-            directory: The directory to list scripts from
+            path: The directory to list scripts from
 
         Returns:
             List of Python script filenames
@@ -102,18 +104,38 @@ def register_python_tools(mcp: FastMCP):
         import os
 
         try:
-            if not os.path.isdir(directory):
-                error_msg = f"Directory does not exist: {directory}"
+            if not os.path.isdir(path):
+                error_msg = f"Path does not exist: {path}"
                 logger.error(error_msg)
                 return {"success": False, "message": error_msg}
 
-            scripts = [f for f in os.listdir(directory) if f.endswith('.py')]
+            scripts = [f for f in os.listdir(path) if f.endswith('.py')]
             return {"success": True, "scripts": scripts}
         except Exception as e:
             error_msg = f"Error listing Python scripts: {e}"
             logger.error(error_msg)
             return {"success": False, "message": error_msg}
     logger.info("Python tools registered successfully")
+
+    @mcp.tool()
+    def read_python_file(ctx: Context, path: str) -> Dict[str, Any]:
+        """
+        Read a Python script from a specified path in the Unreal Engine context. No need to connect to Unreal.
+
+        Args:
+            path: The path to the Python script file
+
+        Returns:
+            The content of the Python script or an error message
+        """
+        try:
+            with open(path, 'r') as file:
+                script = file.read()
+            return {"success": True, "script": script}
+        except Exception as e:
+            error_msg = f"Error reading Python script: {e}"
+            logger.error(error_msg)
+            return {"success": False, "message": error_msg}
 
 if __name__ == "__main__":
     import asyncio
