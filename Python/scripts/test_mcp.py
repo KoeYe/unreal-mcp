@@ -34,16 +34,16 @@ async def call_tool(server_url, tool_name, params):
 
 async def main():
     # Hardcode your tool call here
-    # tool_name = "api_doc_query"
-    # params = {"prompt": "convert .obj file into .uassets"}
+    tool_name = "api_doc_query"
+    params = {"query": "convert .obj file into .uassets"}
     # tool_name = "execute_python_script"
     # with open("/home/koe/unreal-mcp/Python/utils/get_camera_0_view_script.py") as f:
     # # with open("test.py") as f:
     #     python_script = f.read()
 
     # params = {"script": python_script, "path": ""}
-    tool_name = "get_camera_0_view"
-    params = {}
+    # tool_name = "get_camera_0_view"
+    # params = {}
     print(f"Calling {tool_name} with {params}")
 
     result = await call_tool(SERVER_URL, tool_name, params)
