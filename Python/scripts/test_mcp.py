@@ -36,17 +36,20 @@ async def main():
     # Hardcode your tool call here
     # tool_name = "api_doc_query"
     # params = {"prompt": "convert .obj file into .uassets"}
-    tool_name = "execute_python_script"
-    with open("init_editor.py") as f:
-        python_script = f.read()
+    # tool_name = "execute_python_script"
+    # with open("/home/koe/unreal-mcp/Python/utils/get_camera_0_view_script.py") as f:
+    # # with open("test.py") as f:
+    #     python_script = f.read()
 
-    params = {"script": python_script, "path": ""}
+    # params = {"script": python_script, "path": ""}
+    tool_name = "get_camera_0_view"
+    params = {}
     print(f"Calling {tool_name} with {params}")
 
     result = await call_tool(SERVER_URL, tool_name, params)
     
     print("\nResult:")
-    print(json.dumps(result, indent=2))
+    print(result)
 
     # If it's the expected dict format, extract the actual content
     if isinstance(result, dict):

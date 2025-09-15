@@ -136,6 +136,130 @@ def register_python_tools(mcp: FastMCP):
             error_msg = f"Error reading Python script: {e}"
             logger.error(error_msg)
             return {"success": False, "message": error_msg}
+        
+    @mcp.tool()
+    def read_saved_images(ctx: Context) -> Dict[str, Any]:
+        """
+        Read saved images from the Unreal Engine context. No need to connect to Unreal. Defaultly read all images under /workspace/images.
+
+        Returns:
+            List of saved image filenames and paths
+        """
+        try:
+            # 默认图片目录
+            ws = os.environ.get("WORK_SPACE")
+            if not ws or not ws.strip():
+                ws = "/data/koe/coding-agent-ue/Saved"
+            default_image_dir = os.path.join(ws, "images")
+            if not default_image_dir or not default_image_dir.strip():
+                return {"success": False, "message": "Image directory is not set in WORK_SPACE environment variable."}
+
+            # 支持的图片格式
+            image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.tif', '.svg'}
+            
+            # 检查目录是否存在
+            if not os.path.exists(default_image_dir):
+                logger.warning(f"Image directory does not exist: {default_image_dir}")
+                return {
+                    "success": True, 
+                    "message": f"Image directory does not exist: {default_image_dir}",
+                    "images": [],
+                    "image_paths": []
+                }
+            
+            if not os.path.isdir(default_image_dir):
+                error_msg = f"Path is not a directory: {default_image_dir}"
+                logger.error(error_msg)
+                return {"success": False, "message": error_msg}
+            
+            # 获取所有图片文件
+            image_files = []
+            image_paths = []
+            
+            for filename in os.listdir(default_image_dir):
+                file_path = os.path.join(default_image_dir, filename)
+                
+                # 检查是否为文件且有图片扩展名
+                if (os.path.isfile(file_path) and 
+                    any(filename.lower().endswith(ext) for ext in image_extensions)):
+                    image_files.append(filename)
+                    image_paths.append(file_path)
+            
+            # 按文件名排序
+            sorted_pairs = sorted(zip(image_files, image_paths))
+            image_files = [pair[0] for pair in sorted_pairs]
+            image_paths = [pair[1] for pair in sorted_pairs]
+            
+            logger.info(f"Found {len(image_files)} image files in {default_image_dir}")
+            
+            # 返回符合 OpenHands 格式的响应
+            return {
+                "success": True,
+                "message": f"Found {len(image_files)} image files in {default_image_dir}",
+                "images": image_files,
+                "image_paths": image_paths,  # 关键：OpenHands 会识别这个字段
+                "directory": default_image_dir,
+                "count": len(image_files)
+            }
+            
+        except Exception as e:
+            error_msg = f"Error reading saved images: {e}"
+            logger.error(error_msg)
+            return {"success": False, "message": error_msg}
+
+    @mcp.tool()
+    def get_camera_0_view(ctx: Context) -> Dict[str, Any]:
+        """
+        Get the current view from camera 0 in the Unreal Engine context.
+
+        Returns:
+            The image data from camera 0 or an error message
+        """
+        from unreal_mcp_server import get_unreal_connection
+        import re
+
+        try:
+            unreal = get_unreal_connection()
+            if not unreal:
+                logger.error("Failed to connect to Unreal Engine")
+                return {"success": False, "message": "Failed to connect to Unreal Engine"}
+
+            with open('/home/koe/unreal-mcp/Python/utils/get_camera_0_view_script.py') as f: # TODO: remove this hardcode!!
+                script = f.read()
+            response = unreal.send_command("execute_python_script",  {"script": script})
+
+            if not response:
+                logger.error("No response from Unreal Engine")
+                return {"success": False, "message": "No response from Unreal Engine"}
+
+            logger.info(f"Camera 0 view response: {response}")
+            
+            # Extract image path from python_logs
+            image_paths = []
+            if response.get('status') == 'success':
+                image_paths = ['/data/koe/coding-agent-ue/Saved/images/currentimage.png'] # TODO: remove this hardcode!!
+            
+            # Return in format compatible with OpenHands MCPObservation
+            if image_paths:
+                return {
+                    "success": True,
+                    "message": "Camera view captured successfully",
+                    "image_paths": image_paths,  # This is the key field OpenHands looks for
+                    "original_response": response
+                }
+            else:
+                return {
+                    "success": True,
+                    "message": "Camera view executed but no image path found",
+                    "image_paths": [],
+                    "original_response": response
+                }
+
+        except Exception as e:
+            error_msg = f"Error getting camera 0 view: {e}"
+            logger.error(error_msg)
+            return {"success": False, "message": error_msg}
+            
 
 if __name__ == "__main__":
     import asyncio

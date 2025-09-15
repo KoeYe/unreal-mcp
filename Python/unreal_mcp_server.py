@@ -24,7 +24,7 @@ logging.basicConfig(
 logger = logging.getLogger("UnrealMCP")
 
 # Configuration
-UNREAL_HOST = "35.89.69.209"
+UNREAL_HOST = "34.222.169.17"
 UNREAL_PORT = 55557
 
 class UnrealConnection:
@@ -244,7 +244,7 @@ from tools.api_doc_tools import register_api_doc_tools
 
 # Register tools
 register_editor_tools(mcp)
-register_blueprint_tools(mcp)
+# register_blueprint_tools(mcp)
 # register_blueprint_node_tools(mcp)
 register_project_tools(mcp)
 # register_umg_tools(mcp)
@@ -262,8 +262,8 @@ def info():
     - `api_doc_query(query_prompt)` - retrieve the related APIs given prompt
 
     ### Viewport and Screenshots
-    - `focus_viewport(target, location, distance, orientation)` - Focus viewport
-    - `take_screenshot(filename, show_ui, resolution)` - Capture screenshots
+    - `get_camera_0_view()` - Capture and save the current view from camera_0 to workspace/images
+    - `read_saved_images()` - List paths of all saved images in workspace/images
 
     ### Actor Management
     - `get_actors_in_level()` - List all actors in current level

@@ -11,11 +11,13 @@ from functools import lru_cache
 
 from typing import Dict, List, Any, Optional
 
+#TODO: upgrade to dense + sparse retrieval hybrid search here
+
 openai = OpenAI(
     api_key=os.getenv("OPENAI_API_KEY")
 )
-class_db = faiss.read_index("/home/rwang/coding-agent/UnrealEngine/unreal_mcp/Database/kb_Classes.faiss")
-method_db = faiss.read_index("/home/rwang/coding-agent/UnrealEngine/unreal_mcp/Database/kb_Methods.faiss")
+class_db = faiss.read_index("/home/koe/unreal-mcp/Database/kb_Classes.faiss")
+method_db = faiss.read_index("/home/koe/unreal-mcp/Database/kb_Methods.faiss")
 
 # Get logger
 logger = logging.getLogger("UnrealMCP")
@@ -94,8 +96,8 @@ def _filter(class_results, method_results) -> tuple[list[str], list[str]]:
 @lru_cache(maxsize=64)
 def retrieval(prompt: str, class_top_k: int = 3, method_top_k: int = 10):
     """Retrieve relevant chunks based on the prompt"""
-    class_prompt_results, class_distances_results = _recall(prompt, class_db, "/opt/unreal-mcp/Database/kb_Classes_chunks.jsonl", class_top_k)
-    method_prompt_results, method_distances_results = _recall(prompt, method_db, "/opt/unreal-mcp/Database/kb_Methods_chunks.jsonl", method_top_k)
+    class_prompt_results, class_distances_results = _recall(prompt, class_db, "/home/koe/unreal-mcp/Database/kb_Classes_chunks.jsonl", class_top_k)
+    method_prompt_results, method_distances_results = _recall(prompt, method_db, "/home/koe/unreal-mcp/Database/kb_Methods_chunks.jsonl", method_top_k)
 
     logger.info(f"Class results: {len(class_prompt_results)}")
     logger.info(f"Method results: {len(method_prompt_results)}")
